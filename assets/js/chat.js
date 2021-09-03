@@ -1,10 +1,5 @@
 //TODO:
-// iterate over ban list.
-// options to timeout, block, ban, deletemessages - check boxes
-// option to block users
-// Get a list of currently banned users (top 20), auto-ban if a new follow matches a name in the list,
-// Get a list of blocked users
-// Custom message to display in chat after someone from the list has been banned.
+// iterate of follows list.
 
 function onInit() {
     if (!window.localStorage) {
@@ -15,10 +10,30 @@ function onInit() {
     document.getElementById("accessToken").value = localStorage.getItem("accessToken");
     document.getElementById("clientId").value = localStorage.getItem("clientId");
     document.getElementById("usersBanList").value = localStorage.getItem("usersBanList");
+    document.getElementById("customMessage").value = localStorage.getItem("customMessage");
 
-    console.log = function (message) {
-        document.getElementById('status').innerHTML += '<li class="list-group-item">' + message + '</li>';
-    };
+    //Checkboxes
+    if (localStorage.getItem("check_del_msg") === 'true') {
+        document.getElementById("check_del_msg").checked = true;
+    } else {
+        document.getElementById("check_del_msg").checked = false;
+    }
+
+    if (localStorage.getItem("check_timeout_user") === 'true') {
+        document.getElementById("check_timeout_user").checked = true;
+    } else {
+        document.getElementById("check_timeout_user").checked = false;
+    }
+
+    if (localStorage.getItem("check_ban_user") === 'true') {
+        document.getElementById("check_ban_user").checked = true;
+    } else {
+        document.getElementById("check_ban_user").checked = false;
+    }
+
+    /*    console.log = function (message) {
+            document.getElementById('status').innerHTML += '<li class="list-group-item">' + message + '</li>';
+        };*/
 }
 
 document.getElementById("start_button").addEventListener("click", function (e) {
@@ -29,12 +44,20 @@ document.getElementById("start_button").addEventListener("click", function (e) {
     let accessToken = document.getElementById("accessToken").value;
     let clientId = document.getElementById("clientId").value;
     let usersBanList = document.getElementById("usersBanList").value;
+    let customMessage = document.getElementById("customMessage").value;
     localStorage.setItem("mainAccount", mainAccount);
     localStorage.setItem("accessToken", accessToken);
     localStorage.setItem("clientId", clientId);
     localStorage.setItem("usersBanList", usersBanList);
+    localStorage.setItem("customMessage", customMessage);
 
-    document.getElementById('removestorage_button').disabled = "true";
+    //Checkboxes SET
+    let check_ban_user = document.getElementById("check_ban_user").checked;
+    let check_timeout_user = document.getElementById("check_timeout_user").checked;
+    let check_del_msg = document.getElementById("check_del_msg").checked;
+    localStorage.setItem("check_ban_user", check_ban_user);
+    localStorage.setItem("check_timeout_user", check_timeout_user);
+    localStorage.setItem("check_del_msg", check_del_msg);
 
     let inputs = document.getElementsByTagName('input');
 
@@ -46,6 +69,12 @@ document.getElementById("start_button").addEventListener("click", function (e) {
 
     for (i = 0; i < selects.length; i++) {
         selects[i].disabled = true;
+    }
+
+    let textarea = document.getElementsByTagName('textarea');
+
+    for (i = 0; i < textarea.length; i++) {
+        textarea[i].disabled = true;
     }
 
     startChat(localStorage.getItem("mainAccount"), localStorage.getItem("accessToken"), localStorage.getItem("clientId"), localStorage.getItem("usersBanList"));
@@ -77,14 +106,17 @@ document.getElementById("show_clientid").addEventListener("click", function (e) 
 }, false);
 
 document.getElementById("removestorage_button").addEventListener("click", function (e) {
-    this.disabled = "true";
-    removeLocalStorage();
+    if (confirm("This will clear the localStorage. You will need to re-enter data.")) {
+        removeLocalStorage();
+    } else {
+        return false;
+    }
 }, false);
 
 function startChat(mainAccount, accessToken, clientId, usersBanList) {
 
-    let getInfo = function (account= null) {
-        //Twitch API: user info: user_id
+    //Twitch API: user info: user_id
+    let getInfo = function (account = null) {
         if (!account) {
             account = mainAccount;
         }
@@ -104,25 +136,6 @@ function startChat(mainAccount, accessToken, clientId, usersBanList) {
         xhrU.send();
     };
 
-    //Twitch API: banned users
-    let getBannedUsers = function () {
-        let urlB = "https://api.twitch.tv/helix/moderation/banned?broadcaster_id=" + localStorage.getItem("userId") + "";
-        let xhrB = new XMLHttpRequest();
-        xhrB.open("GET", urlB);
-        xhrB.setRequestHeader("Authorization", "Bearer " + accessToken + "");
-        xhrB.setRequestHeader("Client-Id", clientId);
-        xhrB.onreadystatechange = function () {
-            if (xhrB.readyState === 4) {
-                let dataB = JSON.parse(xhrB.responseText);
-                let banned = `${dataB.data[0]['user_name']}`;
-                localStorage.setItem("bannedUsers", banned);
-                document.getElementById("bannedUsers").value = '<li class="list-group-item">' + localStorage.getItem("bannedUsers") + '</li>';
-            }
-        };
-
-        xhrB.send();
-    };
-
     //Twitch API: recent follows
     let getFollows = function () {
         let urlF = "https://api.twitch.tv/helix/users/follows?first=1&to_id=" + localStorage.getItem("userId") + "";
@@ -134,16 +147,17 @@ function startChat(mainAccount, accessToken, clientId, usersBanList) {
             if (xhrF.readyState === 4) {
                 let dataF = JSON.parse(xhrF.responseText);
                 let follows = `${dataF.data[0]['from_name']}`;
-                localStorage.setItem("recentFollows", follows);
+                //localStorage.setItem("recentFollows", follows);
+                document.getElementById("recentFollows").innerHTML = '<li class="list-group-item">' + follows + '</li>';
             }
         };
 
         xhrF.send();
     };
 
+    //Run the Twitch API functions
     getInfo();
-    setInterval(getFollows, 20000);//20secs
-    setInterval(getBannedUsers, 30000);//30secs
+    setInterval(getFollows, 10000);//10secs
 
     //TMI.js Chat
     usersBanList = usersBanList.replace(/\s/g, '');
@@ -170,13 +184,30 @@ function startChat(mainAccount, accessToken, clientId, usersBanList) {
         let chatname = `${tags['display-name']}`;
         chatname = chatname.toLowerCase();
 
-        if (usersBanListArr.indexOf(chatname) !== -1) {
-            let currentDate = new Date();
-            let time = currentDate.getHours() + ":" + (currentDate.getMinutes() < 10 ? '0' : '') + currentDate.getMinutes();
-            client.timeout(channel, chatname, 300, "");
-            client.deletemessage(channel, tags.id);
-            client.ban(channel, chatname, "");
-            client.say(channel, chatname + ' has been banned.');
+        usersBanListArr.forEach(usersList);
+
+        function usersList(item, index) {
+            if (chatname.startsWith(item)) {
+                let currentDate = new Date();
+                let time = currentDate.getHours() + ":" + (currentDate.getMinutes() < 10 ? '0' : '') + currentDate.getMinutes();
+
+                if (localStorage.getItem("check_ban_user") === 'true') {
+                    client.ban(channel, chatname, ""); //ban user
+                }
+                if (localStorage.getItem("check_timeout_user") === 'true') {
+                    client.timeout(channel, chatname, 300, ""); //timeout user
+                }
+                if (localStorage.getItem("check_del_msg") === 'true') {
+                    client.deletemessage(channel, tags.id); //delete message
+                }
+                if (localStorage.getItem("customMessage")) {
+                    client.say(channel, localStorage.getItem("customMessage"));
+                }
+
+                console.log = function (message) {
+                    document.getElementById('status').innerHTML += '<li class="list-group-item">' + message + '</li>';
+                };
+            }
         }
 
     });

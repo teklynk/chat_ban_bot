@@ -13,8 +13,13 @@
 <body onload="onInit()">
 
 <div class="container" style="max-width:500px;">
-    <div class="text-center mt-4 mb-4">
-        <h1 class="h3 mb-2 font-weight-normal">Twitch Chat Auto-Ban</h1>
+    <div class="row">
+        <div class="col-10">
+            <h1 class="h3 pt-4 pl-lg-4 text-center">Twitch Chat Auto-Bot</h1>
+        </div>
+        <div class="col-2 text-center">
+            <img src="assets/images/robot.gif" style="width: 60px;">
+        </div>
     </div>
     <div class="card mt-4 mb-4">
         <div class="card-body">
@@ -26,14 +31,16 @@
     <div class="form-label-group mb-2">
         <input type="text" id="mainAccount" class="form-control" required>
         <label for="mainAccount">
-            <small>Source Twitch Account</small>
+            <small>Twitch Account</small>
         </label>
     </div>
     <div class="form-label-group mb-2">
         <input type="password" id="accessToken" class="form-control" required>
         <label for="accessToken">
             <small>Access token
-                <span id="show_token" style="cursor:pointer;text-align:right;display:inline-block;width:375px;padding-top:4px;font-size:smaller;vertical-align:top;" title="Show/Hide">
+                <span id="show_token"
+                      style="cursor:pointer;text-align:right;display:inline-block;padding-top:4px;margin-left:12px;font-size:smaller;vertical-align:top;"
+                      title="Show/Hide">
                     show
                 </span>
             </small>
@@ -43,12 +50,33 @@
         <input type="password" id="clientId" class="form-control" required>
         <label for="clientId">
             <small>Client Id
-                <span id="show_clientid" style="cursor:pointer;text-align:right;display:inline-block;width:404px;padding-top:4px;font-size:smaller;vertical-align:top;" title="Show/Hide">
+                <span id="show_clientid"
+                      style="cursor:pointer;text-align:right;display:inline-block;padding-top:4px;margin-left:12px;font-size:smaller;vertical-align:top;"
+                      title="Show/Hide">
                     show
                 </span>
             </small>
         </label>
     </div>
+    <div class="form-check">
+        <input class="form-check-input" type="checkbox" value="" id="check_ban_user">
+        <label class="form-check-label" for="check_ban_user">
+            Ban User
+        </label>
+    </div>
+    <div class="form-check">
+        <input class="form-check-input" type="checkbox" value="" id="check_timeout_user">
+        <label class="form-check-label" for="check_timeout_user">
+            Timeout User
+        </label>
+    </div>
+    <div class="form-check">
+        <input class="form-check-input" type="checkbox" value="" id="check_del_msg">
+        <label class="form-check-label" for="check_del_msg">
+            Delete Messages
+        </label>
+    </div>
+    <br>
     <div class="form-label-group mb-2">
         <textarea class="form-control" id="usersBanList" required></textarea>
         <label for="usersBanList">
@@ -57,23 +85,36 @@
     </div>
 
     <div class="form-label-group mb-2">
-        <ul class="list-group" id="bannedUsers">
-
-        </ul>
-        <label for="bannedUsers">
-            <small>Auto Banned</small>
+        <textarea class="form-control" id="customMessage" required></textarea>
+        <label for="customMessage">
+            <small>Custom message to say in chat</small>
         </label>
     </div>
 
+    <hr>
+
+    <div class="form-label-group mb-2">
+        <ul class="list-group" id="recentFollows">
+
+        </ul>
+        <label for="recentFollows">
+            <small>Recent Follower <span id="recentFollows_date_time"></span></small>
+        </label>
+    </div>
+
+    <hr>
     <button class="btn btn-lg btn-success btn-block" id="start_button" type="button">Start</button>
     <button class="btn btn-lg btn-danger btn-block" id="stop_button" type="button" disabled>Stop</button>
     <button class="btn btn-lg btn-dark btn-block" id="removestorage_button" type="button">Reset Settings</button>
 </div>
 
 <div class="container mt-4">
-    <div style="overflow-y:auto;overflow-x:hidden;max-height:300px;">
+    <hr>
+    Log Output:
+    <div style="overflow-y:auto;overflow-x:hidden;max-height:600px;">
         <ul class="list-group-flush" id="status" style="padding-left:0;"></ul>
     </div>
+    <hr>
 </div>
 <script type="text/javascript" src="assets/js/chat.js"></script>
 </body>

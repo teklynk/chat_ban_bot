@@ -1,3 +1,7 @@
 .hide {
     display: none;
 }
+#header {
+    max-width:100%;
+    max-height:auto;
+}
