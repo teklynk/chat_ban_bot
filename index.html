@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Chat Auto-Ban</title>
+    <link rel="stylesheet" href="assets/css/bootstrap452.min.css">
+    <link rel="stylesheet" href="assets/css/dark.min.css">
+    <link rel="stylesheet" href="assets/css/custom.css">
+    <script type="text/javascript" src="assets/js/tmi.min.js"></script>
+
+</head>
+<body onload="onInit()">
+
+<div class="container" style="max-width:500px;">
+    <div class="text-center mt-4 mb-4">
+        <h1 class="h3 mb-2 font-weight-normal">Twitch Chat Auto-Ban</h1>
+    </div>
+    <div class="card mt-4 mb-4">
+        <div class="card-body">
+            Ban user names that match user names in the ban list.<br>
+            <a class="btn btn-lg btn-secondary btn-block mt-4" href="https://twitchtokengenerator.com/" target="_blank">Generate
+                a Twitch Access Token</a>
+        </div>
+    </div>
+    <div class="form-label-group mb-2">
+        <input type="text" id="mainAccount" class="form-control" required>
+        <label for="mainAccount">
+            <small>Source Twitch Account</small>
+        </label>
+    </div>
+    <div class="form-label-group mb-2">
+        <input type="password" id="accessToken" class="form-control" required>
+        <label for="accessToken">
+            <small>Access token
+                <span id="show_token" style="cursor:pointer;text-align:right;display:inline-block;width:375px;padding-top:4px;font-size:smaller;vertical-align:top;" title="Show/Hide">
+                    show
+                </span>
+            </small>
+        </label>
+    </div>
+    <div class="form-label-group mb-2">
+        <input type="password" id="clientId" class="form-control" required>
+        <label for="clientId">
+            <small>Client Id
+                <span id="show_clientid" style="cursor:pointer;text-align:right;display:inline-block;width:404px;padding-top:4px;font-size:smaller;vertical-align:top;" title="Show/Hide">
+                    show
+                </span>
+            </small>
+        </label>
+    </div>
+    <div class="form-label-group mb-2">
+        <textarea class="form-control" id="usersBanList" required></textarea>
+        <label for="usersBanList">
+            <small>Ban List (comma separated list)</small>
+        </label>
+    </div>
+
+    <div class="form-label-group mb-2">
+        <ul class="list-group" id="bannedUsers">
+
+        </ul>
+        <label for="bannedUsers">
+            <small>Auto Banned</small>
+        </label>
+    </div>
+
+    <button class="btn btn-lg btn-success btn-block" id="start_button" type="button">Start</button>
+    <button class="btn btn-lg btn-danger btn-block" id="stop_button" type="button" disabled>Stop</button>
+    <button class="btn btn-lg btn-dark btn-block" id="removestorage_button" type="button">Reset Settings</button>
+</div>
+
+<div class="container mt-4">
+    <div style="overflow-y:auto;overflow-x:hidden;max-height:300px;">
+        <ul class="list-group-flush" id="status" style="padding-left:0;"></ul>
+    </div>
+</div>
+<script type="text/javascript" src="assets/js/chat.js"></script>
+</body>
+</html>
