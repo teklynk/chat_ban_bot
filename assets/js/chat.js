@@ -27,6 +27,9 @@ function onInit() {
     document.getElementById("check_twitchbots").addEventListener("click", function (e) {
         document.getElementById("usersAllowList").disabled = !document.getElementById("check_twitchbots").checked;
     });
+
+    document.getElementById("usersAllowList").disabled = localStorage.getItem("check_twitchbots") !== true;
+
 }
 
 document.getElementById("start_button").addEventListener("click", function (e) {
