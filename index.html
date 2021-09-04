@@ -8,7 +8,19 @@
     <link rel="stylesheet" href="assets/css/dark.min.css">
     <link rel="stylesheet" href="assets/css/custom.css">
     <script type="text/javascript" src="assets/js/tmi.min.js"></script>
-
+    <link rel="apple-touch-icon" sizes="57x57" href="assets/images/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="assets/images/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="assets/images/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="assets/images/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="assets/images/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="assets/images/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="assets/images/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="assets/images/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="assets/images/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="assets/images/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon-16x16.png">
 </head>
 <body onload="onInit()">
 
@@ -18,24 +30,35 @@
             <h1 class="h3 pt-4 pl-lg-4 text-center">Twitch Chat Auto-Bot</h1>
         </div>
         <div class="col-2 text-center">
-            <img src="assets/images/robot.gif" style="width: 60px;">
+            <img src="assets/images/robot.gif" style="width: 60px;" alt="">
         </div>
     </div>
     <div class="card mt-4 mb-4">
         <div class="card-body">
-            Ban user names that match user names in the ban list.<br>
             <a class="btn btn-lg btn-secondary btn-block mt-4" href="https://twitchtokengenerator.com/" target="_blank">Generate
-                a Twitch Access Token</a>
+                Twitch Access Tokens</a>
+            <small>When you create a Twitch Access Tokens, be sure to select a Custom Scope Token with these
+                permissions:
+                <ul class="permissions">
+                    <li>chat:read</li>
+                    <li>chat:edit</li>
+                    <li>channel:moderate</li>
+                    <li>moderation:read</li>
+                    <li>user:read:blocked_users</li>
+                </ul>
+                You can also generate tokens using the Twitch API <a href="https://dev.twitch.tv/docs/authentication"
+                                                                     target="_blank">https://dev.twitch.tv/docs/authentication</a>
+            </small>
         </div>
     </div>
     <div class="form-label-group mb-2">
-        <input type="text" id="mainAccount" class="form-control" required>
+        <input type="text" id="mainAccount" class="form-control">
         <label for="mainAccount">
             <small>Twitch Account</small>
         </label>
     </div>
     <div class="form-label-group mb-2">
-        <input type="password" id="accessToken" class="form-control" required>
+        <input type="password" id="accessToken" class="form-control">
         <label for="accessToken">
             <small>Access token
                 <span id="show_token"
@@ -47,7 +70,7 @@
         </label>
     </div>
     <div class="form-label-group mb-2">
-        <input type="password" id="clientId" class="form-control" required>
+        <input type="password" id="clientId" class="form-control">
         <label for="clientId">
             <small>Client Id
                 <span id="show_clientid"
@@ -58,6 +81,8 @@
             </small>
         </label>
     </div>
+    <hr>
+    <h2>Actions</h2>
     <div class="form-check">
         <input class="form-check-input" type="checkbox" value="" id="check_ban_user">
         <label class="form-check-label" for="check_ban_user">
@@ -76,24 +101,42 @@
             Delete Messages
         </label>
     </div>
+    <hr>
+    <h2>Bot Block Lists</h2>
+    <div class="form-check">
+        <input class="form-check-input" type="checkbox" value="" id="check_twitchbots">
+        <label class="form-check-label" for="check_twitchbots">
+            Use twitchbots.info online database <br><small>This will check if the username exists in the <a
+                href="https://twitchbots.info" target="_blank">twitchbots.info</a> online database.</small>
+        </label>
+    </div>
     <br>
     <div class="form-label-group mb-2">
-        <textarea class="form-control" id="usersBanList" required></textarea>
-        <label for="usersBanList">
-            <small>Ban List (comma separated list)</small>
+        <textarea class="form-control" id="usersAllowList"></textarea>
+        <label for="usersAllowList">
+            <small>Ignore these bots from twitchbots.info (comma separated list)<br>example: Streamlabs,Nightbot,Moobot,DeepBot</small>
         </label>
     </div>
 
     <div class="form-label-group mb-2">
-        <textarea class="form-control" id="customMessage" required></textarea>
+        <textarea class="form-control" id="usersBanList"></textarea>
+        <label for="usersBanList">
+            <small>Custom username block list (comma separated list)<br>This can include partial usernames. example:
+                Hoss__13, Hoss13, hater, judge.</small>
+        </label>
+    </div>
+
+    <div class="form-label-group mb-2">
+        <textarea class="form-control" id="customMessage"></textarea>
         <label for="customMessage">
-            <small>Custom message to say in chat</small>
+            <small>Custom message to say in chat. This can include !alerts. The message will also @username with your
+                custom message.</small>
         </label>
     </div>
 
     <hr>
 
-    <div class="form-label-group mb-2">
+    <div class="form-label-group mb-2 hide">
         <ul class="list-group" id="recentFollows">
 
         </ul>
@@ -102,7 +145,6 @@
         </label>
     </div>
 
-    <hr>
     <button class="btn btn-lg btn-success btn-block" id="start_button" type="button">Start</button>
     <button class="btn btn-lg btn-danger btn-block" id="stop_button" type="button" disabled>Stop</button>
     <button class="btn btn-lg btn-dark btn-block" id="removestorage_button" type="button">Reset Settings</button>
