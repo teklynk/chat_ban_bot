@@ -249,7 +249,7 @@ function startChat(mainAccount, accessToken, clientId, usersBanList, usersAllowL
                     client.deletemessage(channel, tags.id); //delete message
                 }
                 if (localStorage.getItem("customMessage")) {
-                    client.say(channel, '@' + chatname + ' ' + localStorage.getItem("customMessage"));
+                    client.say(channel, localStorage.getItem("customMessage") + ' -> @' + chatname );
                 }
 
                 console.log = function (message) {
