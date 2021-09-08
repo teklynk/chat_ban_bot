@@ -3,5 +3,7 @@
 }
 #header {
     max-width:100%;
-    max-height:auto;
+}
+.color-red {
+    background-color: rgba(106, 0, 10, 0.44);
 }

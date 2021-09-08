@@ -14,6 +14,7 @@ function onInit() {
     document.getElementById("usersAllowList").value = localStorage.getItem("usersAllowList");
     localStorage.setItem("chatUserId", ''); //default on load
     localStorage.setItem("botUser", ''); //default on load
+    localStorage.setItem("recentFollower", ''); //default on load
 
     //Checkboxes
     document.getElementById("check_del_msg").checked = localStorage.getItem("check_del_msg") === 'true';
@@ -28,7 +29,7 @@ function onInit() {
         document.getElementById("usersAllowList").disabled = !document.getElementById("check_twitchbots").checked;
     });
 
-    document.getElementById("usersAllowList").disabled = localStorage.getItem("check_twitchbots") !== true;
+    document.getElementById("usersAllowList").disabled = localStorage.getItem("check_twitchbots") !== 'true';
 
 }
 
@@ -116,7 +117,7 @@ document.getElementById("removestorage_button").addEventListener("click", functi
 function startChat(mainAccount, accessToken, clientId, usersBanList, usersAllowList) {
 
     //Twitch API: user info: user_id
-    let getInfo = function (username) {
+    let getInfo = function (username, follower = false) {
         let urlU = "https://api.twitch.tv/helix/users?login=" + username + "";
         let xhrU = new XMLHttpRequest();
         xhrU.open("GET", urlU);
@@ -130,6 +131,9 @@ function startChat(mainAccount, accessToken, clientId, usersBanList, usersAllowL
                     localStorage.setItem("userId", userId);
                 }
                 localStorage.setItem("chatUserId", userId);
+                if (follower) {
+                    localStorage.setItem("followerUserId", userId);
+                }
                 return userId;
             } else {
                 return false;
@@ -150,8 +154,12 @@ function startChat(mainAccount, accessToken, clientId, usersBanList, usersAllowL
             if (xhrF.readyState === 4) {
                 let dataF = JSON.parse(xhrF.responseText);
                 let follows = `${dataF.data[0]['from_name']}`;
-                //localStorage.setItem("recentFollows", follows);
-                document.getElementById("recentFollows").innerHTML = '<li class="list-group-item">' + follows + '</li>';
+                if (follows !== localStorage.getItem("recentFollower")) {
+                    localStorage.setItem("recentFollower", follows);
+                    verifyFollow(localStorage.getItem("recentFollower"));
+                }
+                //localStorage.setItem("recentFollow", follows);
+                //document.getElementById("recentFollows").innerHTML = '<li class="list-group-item">' + follows + '</li>';
                 return follows;
             } else {
                 return false;
@@ -159,6 +167,19 @@ function startChat(mainAccount, accessToken, clientId, usersBanList, usersAllowL
         };
         xhrF.send();
     };
+
+    let verifyFollow = function (follower) {
+        usersAllowList = localStorage.getItem("usersAllowList");
+        usersAllowList = usersAllowList.replace(/\s/g, '');
+        usersAllowList = usersAllowList.toLowerCase();
+        let allowListArr = usersAllowList.split(',');
+        allowListArr = allowListArr.filter(Boolean);
+        getInfo(follower);
+        getKnownBots(localStorage.getItem("chatUserId"), true);
+        if (!allowListArr.includes(localStorage.getItem("botUser")) && localStorage.getItem("botUser")) {
+            document.getElementById("recentFollows").innerHTML = '<li class="list-group-item">' + localStorage.getItem("botUser") + '</li>';
+        }
+    }
 
     //Twitchbots.info: known bots database api
     let getKnownBots = function (chatuser_id) {
@@ -172,10 +193,6 @@ function startChat(mainAccount, accessToken, clientId, usersBanList, usersAllowL
 
                 if (botUsername) {
                     localStorage.setItem("botUser", botUsername);
-                    //document.getElementById("botUser").value = botUsername;
-                } else {
-                    localStorage.setItem("botUser", '');
-                    //document.getElementById("botUser").value = '';
                 }
 
                 return botUsername;
@@ -185,10 +202,6 @@ function startChat(mainAccount, accessToken, clientId, usersBanList, usersAllowL
         };
         xhrG.send();
     };
-
-    //Run the Twitch API functions
-    getInfo(mainAccount);
-    //setInterval(getFollows, 10000);//10secs
 
     //TMI.js Chat
     usersBanList = usersBanList.replace(/\s/g, '');
@@ -200,6 +213,11 @@ function startChat(mainAccount, accessToken, clientId, usersBanList, usersAllowL
     usersAllowList = usersAllowList.toLowerCase();
     let allowListArr = usersAllowList.split(',');
     allowListArr = allowListArr.filter(Boolean);
+
+    //Run the Twitch API functions
+    getInfo(mainAccount);
+    setInterval(getFollows, 20000);//20secs
+    setInterval(verifyFollow, 30000);//30secs
 
     const client = new tmi.Client({
         options: {debug: true},
@@ -252,7 +270,7 @@ function startChat(mainAccount, accessToken, clientId, usersBanList, usersAllowL
                     client.deletemessage(channel, tags.id); //delete message
                 }
                 if (localStorage.getItem("customMessage")) {
-                    client.say(channel, localStorage.getItem("customMessage") + ' -> @' + chatname );
+                    client.say(channel, localStorage.getItem("customMessage") + ' -> @' + chatname);
                 }
 
                 console.log = function (message) {
