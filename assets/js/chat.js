@@ -78,6 +78,13 @@ document.getElementById("start_button").addEventListener("click", function (e) {
         textarea[i].disabled = true;
     }
 
+    //check if can get localStorage item
+    let authtokens = localStorage.getItem("accessToken");
+    //if not, then redirect and try again.
+    if (!authtokens) {
+        $(location).attr("href", "/");
+    }
+
     startChat(localStorage.getItem("mainAccount"), localStorage.getItem("accessToken"), localStorage.getItem("clientId"), localStorage.getItem("usersBanList"), localStorage.getItem("usersAllowList"));
 }, false);
 
