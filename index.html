@@ -102,21 +102,7 @@
         </label>
     </div>
     <hr>
-    <h2>Bot Block Lists</h2>
-    <div class="form-check">
-        <input class="form-check-input" type="checkbox" value="" id="check_twitchbots">
-        <label class="form-check-label" for="check_twitchbots">
-            Use twitchbots.info online database <br><small>This will check if the username exists in the <a
-                href="https://twitchbots.info" target="_blank">twitchbots.info</a> online database.</small>
-        </label>
-    </div>
-    <br>
-    <div class="form-label-group mb-2">
-        <textarea class="form-control" id="usersAllowList"></textarea>
-        <label for="usersAllowList">
-            <small>Ignore these bots from twitchbots.info (comma separated list)<br>example: Streamlabs,Nightbot,Moobot,DeepBot</small>
-        </label>
-    </div>
+    <h2>Bot Block List</h2>
 
     <div class="form-label-group mb-2">
         <textarea class="form-control" id="usersBanList"></textarea>
@@ -135,15 +121,6 @@
     </div>
 
     <hr>
-
-    <div class="form-label-group mb-2">
-        <ul class="list-group color-red" id="recentFollows">
-
-        </ul>
-        <label for="recentFollows">
-            <small>Recent BOT Follow <span id="recentFollows_date_time"></span></small>
-        </label>
-    </div>
 
     <button class="btn btn-lg btn-success btn-block" id="start_button" type="button">Start</button>
     <button class="btn btn-lg btn-danger btn-block" id="stop_button" type="button" disabled>Stop</button>
