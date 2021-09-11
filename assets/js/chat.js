@@ -182,7 +182,7 @@ function startChat(mainAccount, accessToken, clientId, usersBanList) {
 
     //Run the Twitch API functions
     getInfo(mainAccount);
-    setInterval(getFollows, 500);//1secs
+    setInterval(getFollows, 1000);//1secs
 
     const client = new tmi.Client({
         options: {debug: true},
