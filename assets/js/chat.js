@@ -67,7 +67,7 @@ document.getElementById("start_button").addEventListener("click", function (e) {
         $(location).attr("href", "/");
     }
 
-    startChat(localStorage.getItem("mainAccount"), localStorage.getItem("accessToken"), localStorage.getItem("clientId"), localStorage.getItem("usersBanList"));
+    startChat(localStorage.getItem("mainAccount").toLowerCase(), localStorage.getItem("accessToken"), localStorage.getItem("clientId"), localStorage.getItem("usersBanList"));
 }, false);
 
 document.getElementById("stop_button").addEventListener("click", function (e) {
@@ -107,7 +107,7 @@ function startChat(mainAccount, accessToken, clientId, usersBanList) {
 
     //Twitch API: user info: user_id
     let getInfo = function (username) {
-        let urlU = "https://api.twitch.tv/helix/users?login=" + username + "";
+        let urlU = "https://api.twitch.tv/helix/users?login=" + username.toLowerCase() + "";
         let xhrU = new XMLHttpRequest();
         xhrU.open("GET", urlU);
         xhrU.setRequestHeader("Authorization", "Bearer " + accessToken + "");
@@ -117,7 +117,7 @@ function startChat(mainAccount, accessToken, clientId, usersBanList) {
                 let dataU = JSON.parse(xhrU.responseText);
                 let userId = `${dataU.data[0]['id']}`;
 
-                if (username === mainAccount) {
+                if (username.toLowerCase() === mainAccount.toLowerCase()) {
                     localStorage.setItem("userId", userId);
                 }
 
@@ -188,10 +188,10 @@ function startChat(mainAccount, accessToken, clientId, usersBanList) {
         options: {debug: true},
         connection: {reconnect: true},
         identity: {
-            username: mainAccount,
+            username: mainAccount.toLowerCase(),
             password: 'oauth:' + accessToken
         },
-        channels: [mainAccount]
+        channels: [mainAccount.toLowerCase()]
     });
 
     client.connect().catch(console.error);

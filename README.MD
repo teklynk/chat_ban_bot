@@ -20,4 +20,7 @@ Ban List is a comma separated list of names. These can be sourced from Reddit. Y
 For testing you can start out by checking the "Delete Messages" checkbox and adding a custom message. This will delete the users message and say you custom message in chat right after.
 
 Be sure to click "Start" so that the app can start listening to Twitch chat.
+
+You can add this as a OBS Dock to make it easier to manage:
+OBS > View > Docks > Custom Browser Dock
 ```
