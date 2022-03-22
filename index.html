@@ -45,47 +45,22 @@
             <img src="assets/images/robot.gif" style="width: 60px;" alt="">
         </div>
     </div>
-    <div class="card mt-4 mb-4">
-        <div class="card-body">
-            <a class="btn btn-lg btn-secondary btn-block mt-4" href="https://twitchtokengenerator.com/" target="_blank">Click Here to Generate
-                Twitch Access Tokens</a>
-            <small>When you create a Twitch Access Tokens, be sure to select a Custom Scope Token with these
-                permissions:
-                <ul class="permissions">
-                    <li>chat:read</li>
-                    <li>chat:edit</li>
-                    <li>channel:moderate</li>
-                    <li>moderation:read</li>
-                    <li>user:read:blocked_users</li>
-                </ul>
-                You can also generate tokens using the Twitch API <a href="https://dev.twitch.tv/docs/authentication"
-                                                                     target="_blank">https://dev.twitch.tv/docs/authentication</a>
-            </small>
-        </div>
-    </div>
-    <div class="form-label-group mb-2">
+
+    <div class="form-label-group mb-2 mt-4">
         <input type="text" id="mainAccount" class="form-control">
         <label for="mainAccount">
             <small>Twitch Account</small>
         </label>
+    </div>
+    <div class="mb-2 mt-2">
+        <a href="https://id.twitch.tv/oauth2/authorize?response_type=token&client_id=lioyg2hu9zxt4iw1sc6tzqu7u3svqv&redirect_uri=https://chat-ban-bot.pages.dev&scope=chat:read+chat:edit+channel:moderate+moderation:read+user:read:blocked_users&force_verify=true"
+           target="_self"><img src="assets/images/connect.png"></a>
     </div>
     <div class="form-label-group mb-2">
         <input type="password" id="accessToken" class="form-control">
         <label for="accessToken">
             <small>Access token
                 <span id="show_token"
-                      style="cursor:pointer;text-align:right;display:inline-block;padding-top:4px;margin-left:12px;font-size:smaller;vertical-align:top;"
-                      title="Show/Hide">
-                    show
-                </span>
-            </small>
-        </label>
-    </div>
-    <div class="form-label-group mb-2">
-        <input type="password" id="clientId" class="form-control">
-        <label for="clientId">
-            <small>Client Id
-                <span id="show_clientid"
                       style="cursor:pointer;text-align:right;display:inline-block;padding-top:4px;margin-left:12px;font-size:smaller;vertical-align:top;"
                       title="Show/Hide">
                     show
@@ -151,6 +126,23 @@
 <script type="text/javascript" src="assets/js/chat.js"></script>
 
 <script>
+    let url = window.location.href;
+
+    if (url.indexOf('#access_token') !== -1) {
+        // extract the access_token from the url
+        let access_token = new URL(url).hash.split('&').filter(function (el) {
+            if (el.match('access_token') !== null) return true;
+        })[0].split('=')[1];
+        // fill input with token value
+        document.getElementById("accessToken").value = access_token;
+        // Save token to localstorage
+        localStorage.setItem("accessToken", access_token);
+        // Redirect to default page after getting token
+        window.location.href = "https://chat-ban-bot.pages.dev";
+    } else {
+        document.getElementById("accessToken").value = localStorage.getItem("accessToken");
+    }
+
     // Json data - Ajax call
     let nav_json = JSON.parse($.getJSON({
         'url': "https://twitchapi.teklynk.com/getnav.php",

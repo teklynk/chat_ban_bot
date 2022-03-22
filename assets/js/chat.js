@@ -5,7 +5,6 @@ function onInit() {
 
     document.getElementById("mainAccount").value = localStorage.getItem("mainAccount");
     document.getElementById("accessToken").value = localStorage.getItem("accessToken");
-    document.getElementById("clientId").value = localStorage.getItem("clientId");
     document.getElementById("usersBanList").value = localStorage.getItem("usersBanList");
     document.getElementById("customMessage").value = localStorage.getItem("customMessage");
     localStorage.setItem("chatUserId", ''); //default on load
@@ -25,12 +24,10 @@ document.getElementById("start_button").addEventListener("click", function (e) {
 
     let mainAccount = document.getElementById("mainAccount").value;
     let accessToken = document.getElementById("accessToken").value;
-    let clientId = document.getElementById("clientId").value;
     let usersBanList = document.getElementById("usersBanList").value;
     let customMessage = document.getElementById("customMessage").value;
     localStorage.setItem("mainAccount", mainAccount);
     localStorage.setItem("accessToken", accessToken);
-    localStorage.setItem("clientId", clientId);
     localStorage.setItem("usersBanList", usersBanList);
     localStorage.setItem("customMessage", customMessage);
 
@@ -67,7 +64,7 @@ document.getElementById("start_button").addEventListener("click", function (e) {
         $(location).attr("href", "/");
     }
 
-    startChat(localStorage.getItem("mainAccount").toLowerCase(), localStorage.getItem("accessToken"), localStorage.getItem("clientId"), localStorage.getItem("usersBanList"));
+    startChat(localStorage.getItem("mainAccount").toLowerCase(), localStorage.getItem("accessToken"), localStorage.getItem("usersBanList"));
 }, false);
 
 document.getElementById("stop_button").addEventListener("click", function (e) {
@@ -85,16 +82,6 @@ document.getElementById("show_token").addEventListener("click", function (e) {
     }
 }, false);
 
-document.getElementById("show_clientid").addEventListener("click", function (e) {
-    if (document.getElementById("show_clientid").innerHTML === "hide") {
-        document.getElementById("show_clientid").innerHTML = "show";
-        document.getElementById("clientId").setAttribute('type', 'password');
-    } else {
-        document.getElementById("show_clientid").innerHTML = "hide";
-        document.getElementById("clientId").setAttribute('type', 'text');
-    }
-}, false);
-
 document.getElementById("removestorage_button").addEventListener("click", function (e) {
     if (confirm("This will clear the localStorage. You will need to re-enter data.")) {
         removeLocalStorage();
@@ -103,15 +90,13 @@ document.getElementById("removestorage_button").addEventListener("click", functi
     }
 }, false);
 
-function startChat(mainAccount, accessToken, clientId, usersBanList) {
+function startChat(mainAccount, accessToken, usersBanList) {
 
     //Twitch API: user info: user_id
     let getInfo = function (username) {
-        let urlU = "https://api.twitch.tv/helix/users?login=" + username.toLowerCase() + "";
+        let urlU = "https://twitchapi.teklynk.com/getuserinfo.php?channel=" + username.toLowerCase() + "";
         let xhrU = new XMLHttpRequest();
         xhrU.open("GET", urlU);
-        xhrU.setRequestHeader("Authorization", "Bearer " + accessToken + "");
-        xhrU.setRequestHeader("Client-Id", clientId);
         xhrU.onreadystatechange = function () {
             if (xhrU.readyState === 4) {
                 let dataU = JSON.parse(xhrU.responseText);
@@ -134,11 +119,9 @@ function startChat(mainAccount, accessToken, clientId, usersBanList) {
 
     //Twitch API: recent follows
     let getFollows = function () {
-        let urlF = "https://api.twitch.tv/helix/users/follows?first=1&to_id=" + localStorage.getItem("userId") + "";
+        let urlF = "https://twitchapi.teklynk.com/getuserfollows.php?channel=" + mainAccount.toLowerCase() + "&limit=1";
         let xhrF = new XMLHttpRequest();
         xhrF.open("GET", urlF);
-        xhrF.setRequestHeader("Authorization", "Bearer " + accessToken + "");
-        xhrF.setRequestHeader("Client-Id", clientId);
         xhrF.onreadystatechange = function () {
             if (xhrF.readyState === 4) {
                 let dataF = JSON.parse(xhrF.responseText);
@@ -182,10 +165,13 @@ function startChat(mainAccount, accessToken, clientId, usersBanList) {
 
     //Run the Twitch API functions
     getInfo(mainAccount);
-    setInterval(getFollows, 1000);//1secs
+    setInterval(getFollows, 10000);//10secs
 
     const client = new tmi.Client({
-        options: {debug: true},
+        options: {
+            debug: true,
+            skipUpdatingEmotesets: true
+        },
         connection: {reconnect: true},
         identity: {
             username: mainAccount.toLowerCase(),
